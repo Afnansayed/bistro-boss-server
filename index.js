@@ -63,6 +63,23 @@ async function run() {
            const result = await usersCollection.find().toArray();
            res.send(result);
     })
+    //return admin or not 
+    app.get('/users/admin/:email',verifyToken,async(req,res) => {
+          const email = req.params.email;
+
+          if(email !== req.decoded.email){
+            return res.status(403).send({message: 'Unauthorized access'});
+          }
+          const query = {email: email};
+          const user = await usersCollection.findOne(query);
+          let admin = false;
+          if(user){
+            if(user?.role === 'admin'){
+               admin = true;
+            }
+          }
+          res.send({admin})
+    })
     //post
     app.post('/users',async (req,res)=>{
            const user = req.body;
