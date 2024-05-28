@@ -10,6 +10,12 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+//verify token 
+   const verifyToken = (req,res,next) => {
+           console.log('inside verify token',req.headers);
+           next();
+   }
+
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.khblnbj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -41,7 +47,8 @@ async function run() {
     })
     //users  related  api
     //get
-    app.get('/users',async(req,res) => {
+    app.get('/users',verifyToken,async(req,res) => {
+    
            const result = await usersCollection.find().toArray();
            res.send(result);
     })
