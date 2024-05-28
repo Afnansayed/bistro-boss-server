@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
@@ -32,6 +33,12 @@ async function run() {
     const cartsCollection = client.db("bistroDB").collection('carts');
     const usersCollection = client.db("bistroDB").collection('users');
 
+    //jwt related api
+    app.post('/jwt',async(req,res) =>{
+           const user  = req.body;
+           const token=  jwt.sign(user , process.env.DB_ACCESS_TOKEN,{expiresIn: '1h'}); 
+           res.send({ token });
+    })
     //users  related  api
     //get
     app.get('/users',async(req,res) => {
@@ -61,7 +68,7 @@ async function run() {
               const id = req.params.id;
               const filter = {_id: new ObjectId(id)};
               const updatedDoc ={
-                set:{
+                $set:{
                   role: 'admin'
                 }
               }
