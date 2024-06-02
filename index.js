@@ -137,6 +137,13 @@ async function run() {
          const result = await menuCollection.insertOne(item);
          res.send(result);
     })
+    //menu delete 
+    app.delete('/menu/:id',verifyToken, verifyAdmin,async(req,res) => {
+          const id = req.params.id;
+          const query = {_id: new ObjectId(id)};
+          const result = await menuCollection.deleteOne(query);
+          res.send(result);
+    })
     // for carts
     //get
     app.get('/carts', async (req, res) => {
@@ -160,6 +167,17 @@ async function run() {
       const result = await cartsCollection.deleteOne(query);
       res.send(result);
     })
+
+    //stats or analytics
+    app.get('/admin-stats', async (req,res) => {
+          const users = await usersCollection.estimatedDocumentCount();
+          const menuItems = await menuCollection.estimatedDocumentCount();
+
+          res.send({
+            users,
+            menuItems
+          })
+    }) 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
